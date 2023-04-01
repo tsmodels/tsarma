@@ -33,7 +33,7 @@ LazyData: true
 RdMacros: Rdpack
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
-remotes: tsmodels/tsmethods, tsmodels/tsdistributions, tsmodels/tsaux, tsmodels/tsdatasets
+Remotes: tsmodels/tsmethods, tsmodels/tsdistributions, tsmodels/tsaux, tsmodels/tsdatasets
 Suggests: 
     knitr,
     rmarkdown,
