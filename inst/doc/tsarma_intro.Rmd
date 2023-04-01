@@ -1,0 +1,271 @@
+---
+title: "ARMAX Models with tsarma"
+output: 
+    rmarkdown::html_vignette:
+        code_folding: show
+        css:
+              - !expr system.file("rmarkdown/templates/html_vignette/resources/vignette.css", package = "rmarkdown")
+              - custom.css
+vignette: >
+  %\VignetteIndexEntry{ARMAX Models with tsarma}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+```{r setup,echo=FALSE,warning=FALSE,message=FALSE}
+library(tsarma)
+library(data.tree)
+library(data.table)
+library(flextable)
+library(xts)
+```
+
+The **tsarma** package implements methods for the estimation, inference, filtering, 
+prediction and simulation of stationary time series using the ARMA(p,q)-X model. 
+It makes use of the [tsmodels](https://github.com/tsmodels) framework, providing 
+common methods with similar inputs and classes with similar outputs.
+
+The [Appendix](#appendix) provides a table with a hierarchical overview of the 
+main functions and methods currently implemented in the package.
+
+
+## Estimation
+
+The ARMA(p,q)-X model implemented in the package has the following representation:
+
+$$
+\Phi\left(L\right)\left(1-L\right)\left(y_t - \mu_t\right) = \Theta\left(L\right)\varepsilon_t
+$$
+where $L$ is the lag operator. This can equivalently be written out as:
+
+$$
+\begin{aligned}
+\mu_t &= \mu + \sum^k_{j=1}\xi_jx_t\\
+y_t &= \mu_t + \sum^p_{j=1}\phi_j \left(y_{t-j} - \mu_{t-j}\right) + \sum^q_{j=1}\theta_j\varepsilon_{t-j} + \varepsilon_t\\
+\varepsilon_t &\sim D\left(0, \sigma,\ldots\right)
+\end{aligned}
+$$
+
+where $x$ is an optional matrix of external *pre-lagged* regressors with coefficients $\xi$.
+The ARMA coefficients are $\phi$ and $\theta$ respectively, constrained during estimation so that
+their inverse roots are less than unity. The residuals $\varepsilon_t$ can be modeled using one of the 
+distributions implemented in the [tsdistributions](https://github.com/tsmodels/tsdistributions) 
+package with additional parameters ($\ldots$) to capture higher order moments. 
+Both $\mu$ and $\sigma$ are estimated, not concentrated out. 
+
+Initialization of the ARMA recursion proceeds as follows:
+
+* For a ARMA(p,q) or ARMA (p,0) model with $p > 0$, the recursion is initialized at time $t=p+1$ so that 
+p degrees of freedom are used up. If an MA term is present ($q>0$), then it will
+also be initialized at time $t=p+1$ irrespective of the MA order, allowing all
+terms in the MA component ($j=\left(1,\ldots,q\right)$) for which $t>j$ to contribute 
+to the initial fitted values.
+* For an ARMA(0,q) model with $q>0$, the recursion is initialized at time $t=2$ 
+allowing all terms in the MA component ($j=\left(1,\ldots,q\right)$) for 
+which $t>j$ to contribute to the initial fitted values.
+
+Initial values for the coefficients proceed by first trying a pass through the
+`stats::arima` function, and if that fails, then then the method of 
+[@Hannan1982] is used instead.
+
+Estimation uses the [nloptr](https://cran.r-project.org/web/packages/nloptr/index.html) 
+solver with analytic gradients provided through the use of the [TMB](https://cran.r-project.org/web/packages/TMB/index.html) 
+package for which a custom C++ functions have been created written to minimize the log-likelihood 
+subject to the distribution chosen. Inequality constraints for stationarity (AR) 
+and invertibility (MA) are imposed and their Jacobians calculated using `jacobian`
+function from the the [numDeriv](https://cran.r-project.org/web/packages/numDeriv/index.html) 
+package.
+
+Standard errors are implemented with methods for `bread` and `estfun` (scores), in
+addition to functions for `meat` and `meat_HAC` using the 
+[sandwich](https://cran.r-project.org/web/packages/sandwich/index.html) package 
+framework.
+
+
+## Demonstration
+
+### Estimation
+
+We demonstrate the functionality of the package using the SPY ETF price series from 
+the [tsdatasets](https://github.com/tsmodels/tsdatasets) package using an 
+ARMA(2,1) model, after taking log differences.
+
+```{r, highlight=T,message=FALSE,warning=FALSE}
+spy <- tsdatasets::spy
+spyr <- diff(log(spy$Close))[-1]
+spec <- arma_modelspec(spyr[1:2000], order = c(2,1), distribution = "jsu")
+mod <- estimate(spec)
+summary(mod, vcov_type = "QMLE")
+```
+
+The `summary` method has an optional argument for the type of coefficient 
+covariance matrix to use for calculating the standard errors. Valid options
+are the analytic hessian ("H"), outer product of gradients ("OP"), Quasi-MLE
+("QMLE") and Newey-West ("NW") for which additional arguments can be passed (see
+the `bwNeweyWest` function in the sandwich package).
+
+The summary object can be printed to screen or to a flextable object which provides
+a fancier output as illustrated below:
+
+```{r}
+model_summary <- summary(mod, vcov_type = "QMLE")
+out <- print(model_summary, format = "flextable", table.caption = "SPY ARMA(2,1)~JSU")
+out
+```
+
+There are options to control what goes into the table and whether parameters
+should be kept with their names or symbols. The model equation is generated from 
+the `tsequation` method.
+
+The `plot` method on the estimated object generates a set of 4 plots of the
+fitted against actual values, the histogram of the standardized residuals against
+the expected density of the distribution used, and the ARMA inverse roots and
+impulse response function.
+
+```{r, fig.height=8, fig.width=7}
+plot(mod)
+```
+
+The impulse response function (`arma_irf`) of this model shows that a 
+unit variance shock will decay to zero after about 5 periods.
+
+### Prediction
+
+The `predict` method will generate h step ahead predictions of the conditional mean,
+the model standard deviation as well as a simulated predictive distribution using
+either bootstrap re-sampling of the residuals else parametric sampling based on the
+distribution chosen to estimate the model. Optionally, the user can pass in a matrix
+of innovations to be used instead. These can either be uniform deviates (in 
+effect quantiles) which will be transformed into the model's distributional 
+innovations, standardized innovations which will be scaled by the standard deviation
+of the model, else non-standardized innovations. The latter may be useful when 
+passing a GARCH generated set of forecast innovations.
+
+The `forc_dates` argument allows the user to pass a set of time indices representing 
+the forecast horizon, else the function will try to auto-generate these based
+on the estimated sampling frequency of the data.
+
+```{r,highlight=T}
+p <- predict(mod, h = 25, bootstrap = TRUE, nsim = 5000)
+head(cbind(p$mean, p$sigma))
+```
+
+The variance of the prediction error at time $t+h$ is equal to:
+
+$$
+\hat \sigma\sum^{h-1}_{i=0}\Psi^2_i
+$$
+where $\Psi$ represent the infinite MA representation of an ARMA(p,q) model 
+(psi-weights), which can be generated using the `stats::ARMAtoMA` function.
+
+
+Since the output is of class `tsmodel.predict`, the corresponding plot method
+from the [tsmethods](https://github.com/tsmodels/tsmethods) package can be used
+directly.
+
+```{r, fig.width=7,fig.height = 4}
+par(mar = c(3,3,3,3))
+plot(p, n_original = 100, main = "SPY ARMA(2,1)~JSU 25-period prediction", ylab = "", xlab = "", gradient_color = "azure3",interval_color = "orange")
+```
+
+### Filtering and Simulation
+
+The 2 final methods of note in the package are `tsfilter` and `simulate` which allow
+the filtering of new data and simulation, respectively. Both of these methods can 
+be dispatched from either an estimated model of class `tsarma.estimate` as well 
+as a specification object of class `tsarma.spec`. In the following demonstration, 
+the combination of `tsfilter` and `simulate` methods is illustrated. 
+
+
+We first take the original specification object and replace the parameter matrix
+holding the estimated parameters from the estimated object. This is all that is
+required.
+
+```{r}
+parmatrix <- copy(mod$parmatrix)
+spec$parmatrix <- parmatrix
+```
+
+In the next step we verify that `tsfilter` both the specification and
+estimated objects return the same result.
+
+```{r}
+filter_spec <- tsfilter(spec, y = spyr[2001:2010])
+filter_model <- tsfilter(mod, y = spyr[2001:2010])
+all.equal(fitted(filter_spec), fitted(filter_model))
+```
+
+Filtering on a specification object is equivalent to running through the
+ARMA recursion with fixed parameters. We can check that passing a specification
+object without new data to `tsfilter` will results in the same values as
+those from the estimated model.
+
+```{r}
+filter_spec <- tsfilter(spec)
+all.equal(fitted(mod), fitted(filter_spec))
+```
+
+It is also possible to completely replace y with a new dataset if we have pooled
+estimates of the parameters to use in the parameter matrix. Simply put, the 
+filtering algorithm takes a set of fixed parameters and filters the data.
+
+Next, we illustrate how to generate a predictive distribution using the `simulate`
+method on both the estimated and specification objects and verify replication
+of results with the `predict` method.
+
+```{r}
+sim_spec <- spec
+sim_spec$parmatrix <- copy(mod$parmatrix)
+filter_spec <- tsfilter(sim_spec)
+maxpq <- max(spec$model$order)
+series_init <- tail(sim_spec$target$y_orig, maxpq)
+innov_init <- as.numeric(tail(residuals(filter_spec), maxpq))
+simulate_spec <- simulate(sim_spec, nsim = 2000, seed = 100, h = 10, series_init = series_init, innov_init = innov_init)
+simulate_model <- simulate(mod, nsim = 2000, seed = 100, h = 10, series_init = series_init, innov_init = innov_init)
+set.seed(100)
+p <- predict(mod, h = 10, nsim = 2000)
+# equivalence between estimation and specification simulated distributions
+all.equal(simulate_spec$simulated, simulate_model$simulated)
+# equivalence between simulation method and prediction method distributions
+all.equal(simulate_spec$simulated, p$distribution)
+```
+
+
+## Conclusion
+
+The **tsarma** package is currently under development and may change in the future.
+Potential areas for improvement are likely to be the inclusion of non-stationary
+series turning it into an ARIMA model. Adding seasonality is not something which
+is planned, and users who work with stationary seasonal series can use fourier
+terms in the regressors using the `fourier_series` function from [tsaux](https://github.com/tsmodels/tsaux). 
+
+
+## Appendix {#appendix}
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+x <- read.csv('function_map.csv')
+colnames(x)[1] <- "(...)"
+tsarma_map <- as.Node(x)
+map_df <- ToDataFrameTree(tsarma_map, "type","input","output")
+map_df[,1] <- gsub(" ", "\t", map_df[,1], fixed = TRUE)
+names(map_df)[1] <- c("(...)")
+map_df[1, 2:4] <- " "
+out <- flextable(map_df) |> theme_alafoli() |> color(i = 1, j = 1, color = "purple")
+out <- out |> color(i = 2, j = 1, color = "steelblue")
+out <- out |> color(i = 5, j = 1, color = "steelblue")
+out <- out |> color(i = 34, j = 1, color = "steelblue")
+out <- out |> color(i = 32, j = 1, color = "steelblue")
+out <- out |> color(i = 6, j = 1, color = "cadetblue")
+out <- out |> color(i = 22, j = 1, color = "cadetblue")
+out <- out |> set_caption(caption = "Table: tsarma function map")
+out
+```

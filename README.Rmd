@@ -1,0 +1,34 @@
+---
+output: github_document
+---
+
+```{r, echo = FALSE}
+version <- as.vector(read.dcf('DESCRIPTION')[, 'Version'])
+version <- gsub('-', '.', version)
+```
+
+[![R-CMD-check](https://github.com/tsmodels/tsarma/workflows/R-CMD-check/badge.svg)](https://github.com/tsmodels/tsarma/actions)
+[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg?style=flat-square)](commits/master)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/tsarma)](https://cran.r-project.org/package=tsarma)
+
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# tsarma
+
+The **tsarma** package implements methods for the maximum likelihood estimation of 
+ARMA(p,q)-X models for stationary time series, backed by autodiff (using TMB package).
+It includes methods for inference, filtering, prediction, simulation and backtesting.
+
+It makes use of the [tsmodels](https://github.com/tsmodels) framework, providing 
+common methods with similar inputs and classes with similar outputs.
+
+
+
