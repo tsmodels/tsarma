@@ -261,11 +261,12 @@ names(map_df)[1] <- c("(...)")
 map_df[1, 2:4] <- " "
 out <- flextable(map_df) |> theme_alafoli() |> color(i = 1, j = 1, color = "purple")
 out <- out |> color(i = 2, j = 1, color = "steelblue")
-out <- out |> color(i = 5, j = 1, color = "steelblue")
-out <- out |> color(i = 34, j = 1, color = "steelblue")
-out <- out |> color(i = 32, j = 1, color = "steelblue")
-out <- out |> color(i = 6, j = 1, color = "cadetblue")
-out <- out |> color(i = 22, j = 1, color = "cadetblue")
+out <- out |> color(i = 6, j = 1, color = "steelblue")
+out <- out |> color(i = 7, j = 1, color = "cadetblue")
+out <- out |> color(i = 23, j = 1, color = "cadetblue")
+out <- out |> color(i = 33, j = 1, color = "steelblue")
+out <- out |> color(i = 35, j = 1, color = "steelblue")
 out <- out |> set_caption(caption = "Table: tsarma function map")
+out <- out |> width(j = 1, width = 2)
 out
 ```
