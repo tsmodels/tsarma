@@ -38,7 +38,7 @@ tidy.tsarma.estimate <- function(x, conf.int = FALSE, conf.level = 0.95, vcov_ty
         ci <- as_tibble(as.data.table(confint(x, level = conf.level), keep.rownames = TRUE) |> setnames("rn","term"), rownames = NA)
         result <- left_join(result, ci, by = "term")
     }
-    result
+    return(result)
 }
 
 #' Construct a summary glance of an estimated ARMA object
@@ -54,9 +54,7 @@ tidy.tsarma.estimate <- function(x, conf.int = FALSE, conf.level = 0.95, vcov_ty
 #'
 #'
 glance.tsarma.estimate <- function(x, ...) {
-    # include loglik, nobs, convergence, init variance etc, AIC, BIC
     out <- tibble(
-        sigma = sqrt(unconditional(x)),
         logLik = as.numeric(logLik(x)),
         AIC = AIC(x),
         BIC = BIC(x),
