@@ -113,12 +113,12 @@ are the analytic hessian ("H"), outer product of gradients ("OP"), Quasi-MLE
 ("QMLE") and Newey-West ("NW") for which additional arguments can be passed (see
 the `bwNeweyWest` function in the sandwich package).
 
-The summary object can be printed to screen or to a flextable object which provides
+The summary object can be printed to screen or returned as a flextable object which provides
 a fancier output as illustrated below:
 
 ```{r}
 model_summary <- summary(mod, vcov_type = "QMLE")
-out <- print(model_summary, format = "flextable", table.caption = "SPY ARMA(2,1)~JSU")
+out <- as_flextable(model_summary, table.caption = "SPY ARMA(2,1)~JSU")
 out
 ```
 

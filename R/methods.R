@@ -282,9 +282,10 @@ summary.tsarma.estimate <- function(object, digits = 4, vcov_type = "H", ...)
     return(out)
 }
 
-#' Model Estimation Summary Print method
-#'
-#' @description Print method for class \dQuote{summary.tsarma}
+#' Transform a summary object into flextable
+#' @description
+#' Transforms a \dQuote{summary.tsarma} object into a flextable
+#' with options on symbolic representation and model equation.
 #' @param x an object of class \dQuote{summary.tsarma}.
 #' @param digits integer, used for number formatting. Optionally, to avoid
 #' scientific notation, set \sQuote{options(scipen=999)}.
@@ -293,10 +294,34 @@ summary.tsarma.estimate <- function(object, digits = 4, vcov_type = "H", ...)
 #' @param include.equation logical. If TRUE, adds a section with the symbolic model equation.
 #' @param include.statistics logical. If TRUE, adds a section with summary statistics on the model.
 #' @param table.caption an optional string for the table caption.
-#' @param format either prints to \dQuote{console} or prints and returns a \dQuote{flextable} object.
-#' @param ... additional arguments passed to flextable print method.
-#' @return Invisibly returns a flextable object if output was set to \dQuote{flextable} else
-#' the original summary object if output was set to \dQuote{console}.
+#' @param ... additional arguments passed to flextable method.
+#' @return A flextable object.
+#' @aliases as_flextable.summary.tsarma
+#' @method as_flextable summary.tsarma
+#' @rdname as_flextable
+#' @export
+as_flextable.summary.tsarma <- function(x, digits = max(3L, getOption("digits") - 3L),
+                                        signif.stars = getOption("show.signif.stars"),
+                                        include.symbols = TRUE, include.equation = TRUE,
+                                        include.statistics = TRUE,
+                                        table.caption = paste0(toupper(x$model)," Model Summary"), ...)
+{
+    out <- .print_flextable(x, digits = digits, signif.stars = signif.stars,
+                     include.symbols = include.symbols, include.equation = include.equation,
+                     include.statistics = include.statistics,
+                     table.caption = table.caption, ...)
+    return(out)
+}
+
+#' Model Estimation Summary Print method
+#'
+#' @description Print method for class \dQuote{summary.tsarma}
+#' @param x an object of class \dQuote{summary.tsarma}.
+#' @param digits integer, used for number formatting. Optionally, to avoid
+#' scientific notation, set \sQuote{options(scipen=999)}.
+#' @param signif.stars logical. If TRUE, ‘significance stars’ are printed for each coefficient.
+#' @param ... not currently used.
+#' @return Invisibly returns the original summary object.
 #' @aliases print.summary.tsarma
 #' @method print summary.tsarma
 #' @rdname print
@@ -304,22 +329,9 @@ summary.tsarma.estimate <- function(object, digits = 4, vcov_type = "H", ...)
 #'
 #'
 print.summary.tsarma <- function(x, digits = max(3L, getOption("digits") - 3L),
-                                  signif.stars = getOption("show.signif.stars"),
-                                  include.symbols = TRUE, include.equation = TRUE,
-                                  include.statistics = TRUE, table.caption = paste0(toupper(x$model)," Model Summary"),
-                                  format = c("console","flextable"), ...)
+                                  signif.stars = getOption("show.signif.stars"), ...)
 {
-    format <- match.arg(format[1], c("console","flextable"))
-    if (format == "console") {
-        .print_screen(x, digits = digits, signif.stars = signif.stars, table.caption = table.caption, ...)
-    } else {
-        out <- .print_flextable(x, digits = digits, signif.stars = signif.stars,
-                                include.symbols = include.symbols, include.equation = include.equation,
-                                include.statistics = include.statistics,
-                                table.caption = table.caption, ...)
-        print(out)
-        return(invisible(out))
-    }
+    .print_screen(x, digits = digits, signif.stars = signif.stars, ...)
 }
 
 

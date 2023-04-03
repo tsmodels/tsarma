@@ -78,7 +78,7 @@
         out <- out |> hline(part = "footer",i = k - 4, j = 1)
         out <- out |> hline(part = "footer",i = k, j = 1)
     }
-    out <- colformat_double(out, digits = digits) |> autofit()
+    out <- colformat_double(out, digits = digits)
     return(out)
 }
 

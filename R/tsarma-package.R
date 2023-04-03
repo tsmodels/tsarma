@@ -11,7 +11,7 @@
 #' @importFrom sandwich estfun bwNeweyWest vcovHAC vcovOPG bread
 #' @importFrom numDeriv grad jacobian
 #' @importFrom nloptr nloptr
-#' @importFrom flextable flextable set_caption add_footer_row add_footer_lines append_chunks as_chunk as_equation as_paragraph compose colformat_double set_header_labels padding bold align autofit hline width
+#' @importFrom flextable flextable as_flextable set_caption add_footer_row add_footer_lines append_chunks as_chunk as_equation as_paragraph compose colformat_double set_header_labels padding bold align autofit hline width
 #' @importFrom dplyr rename left_join
 #' @importFrom generics glance tidy
 #' @importFrom tibble as_tibble tibble
