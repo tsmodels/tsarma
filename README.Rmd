@@ -31,4 +31,5 @@ It makes use of the [tsmodels](https://github.com/tsmodels) framework, providing
 common methods with similar inputs and classes with similar outputs.
 
 
+The package vignette is available in the new tsmodels site [here](https://www.nopredict.com/packages/tsarma.html).
 
