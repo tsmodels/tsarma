@@ -527,6 +527,11 @@ tsfilter.tsarma.spec <- function(object, y = NULL, newxreg = NULL, ...)
 #'
 predict.tsarma.estimate <- function(object, h = 1, newxreg = NULL, bootstrap = FALSE, nsim = 1000, innov = NULL, innov_type = "r", innov_init = NULL, forc_dates = NULL, series_init = NULL, ...)
 {
+    if (!is.null(innov)) {
+        if (!is.matrix(innov)) stop("\ninnov must be a matrix of size nsim x h")
+        if (NROW(innov) != nsim) stop("\nNROW(innov) must be equal to nsim")
+        if (NCOL(innov) != h) stop("\nNCOL(innov) must be equal to h")
+    }
     model <- object$spec$model$model
     p <- .predict_arma(object = object, h = h, newxreg = newxreg, bootstrap = bootstrap, nsim = nsim, innov = innov, innov_type = innov_type,
                        innov_init = innov_init, forc_dates = forc_dates, series_init = series_init)
