@@ -1,7 +1,7 @@
 
-[![R-CMD-check](https://github.com/tsmodels/tsarma/workflows/R-CMD-check/badge.svg)](https://github.com/tsmodels/tsarma/actions)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2023--04--15-yellowgreen.svg)](/commits/master)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
+[![R-CMD-check](https://github.com/tsmodels/tsarma/workflows/R-hub/badge.svg)](https://github.com/tsmodels/tsarma/actions)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2024--06--28-yellowgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.2.0-orange.svg?style=flat-square)](commits/master)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/tsarma)](https://cran.r-project.org/package=tsarma)
 
 # tsarma
