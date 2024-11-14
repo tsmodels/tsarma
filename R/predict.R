@@ -41,7 +41,6 @@
                 y_f[i] <- y_f[i] + s
             }
         }
-
     }
     series_forc <- tail(y_f, h)
     psi_weights <- c(1, ARMAtoMA(phi, theta, lag.max = h + 1))
@@ -52,9 +51,9 @@
     series_init <- as.numeric(tail(y, maxpq))
     if (bootstrap) {
         innov <- matrix(sample(as.numeric(residuals(object)), nsim * h, replace = TRUE), nrow = nsim, ncol = h)
-        sim <- simulate(object, h = h, nsim = nsim, innov = innov, innov_init = innov_init, series_init = series_init, innov_type = "r")
+        sim <- simulate(object, h = h, nsim = nsim, innov = innov, xreg = newxreg, innov_init = innov_init, series_init = series_init, innov_type = "r")
     } else {
-        sim <- simulate(object, h = h, nsim = nsim, innov = innov, innov_type = innov_type, innov_init = innov_init, series_init = series_init)
+        sim <- simulate(object, h = h, nsim = nsim, innov = innov, xreg = newxreg, innov_type = innov_type, innov_init = innov_init, series_init = series_init)
     }
     sim <- sim$simulated
     colnames(sim) <- as.character(forc_dates)

@@ -1,11 +1,13 @@
 ---
-title: "ARMAX Models with tsarma"
+title: "ARMAX Models"
+author: "Alexios Galanos"
+date: "`r Sys.Date()`"
 output: 
     rmarkdown::html_vignette:
+        css: custom.css
         code_folding: show
-        css:
-              - !expr system.file("rmarkdown/templates/html_vignette/resources/vignette.css", package = "rmarkdown")
-              - custom.css
+        toc: true
+link-citations: yes
 vignette: >
   %\VignetteIndexEntry{ARMAX Models with tsarma}
   %\VignetteEngine{knitr::rmarkdown}
@@ -18,6 +20,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
 
 ## Introduction
 

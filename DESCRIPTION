@@ -1,6 +1,6 @@
 Package: tsarma
 Type: Package
-Title: Univariate ARMA Models
+Title: Univariate Autoregressive Moving Average ('ARMA') Models
 Version: 0.2.0
 Author: Alexios Galanos
 Maintainer: alexios galanos <alexios@4dscape.com>
@@ -13,30 +13,23 @@ Imports:
     numDeriv,
     xts,
     zoo,
-    generics,
+    lubridate,
     future.apply,
     future,
     progressr,
-    dplyr,
-    tibble,
     flextable,
     stats,
     utils,
     data.table,
     tsdistributions,
-    tsaux,
     sandwich
-Description: Autoregressive Moving Average Models. Estimation, filtering, prediction, simulation and diagnostics.
+Description: Autoregressive Moving Average Models with methods for estimation using automatic differentiation, filtering, prediction, simulation and diagnostics.
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RdMacros: Rdpack
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
-Remotes: tsmodels/tsmethods, tsmodels/tsdistributions, tsmodels/tsaux, tsmodels/tsdatasets
 Suggests: 
-    knitr,
-    rmarkdown,
-    data.tree,
-    tsdatasets
+    knitr, rmarkdown, data.tree, tsdatasets
 VignetteBuilder: knitr

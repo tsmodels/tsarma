@@ -2,7 +2,7 @@
 # arma model
 arma_fun <- function(pars, env)
 {
-    parameter <- value <- NULL
+    estimate <- parameter <- value <- NULL
     parmatrix <- env$parmatrix
     parmatrix[estimate == 1, value := pars]
     llh <- env$tmb$fn(pars)

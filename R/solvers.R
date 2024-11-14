@@ -15,32 +15,32 @@
 #' the \dQuote{nloptr_fast_options} which uses an SQP solver. nloptr has many other
 #' solvers and combination of solvers which can be used. However, keep in mind that the solver
 #' must accept analytic derivatives as well as nonlinear inequality constraints.
-#' @export nloptr_default_options
+#' @export arma_nloptr_default_options
 #' @aliases nloptr_options
 #' @rdname nloptr_options
 #' @author Alexios Galanos
 #'
-nloptr_default_options <- function(trace = FALSE, xtol_rel = 1e-14, maxeval = 10000, xtol_abs = 1e-12)
+arma_nloptr_default_options <- function(trace = FALSE, xtol_rel = 1e-14, maxeval = 10000, xtol_abs = 1e-12)
 {
     opt <- list(print_level = ifelse(trace, 1, 0), algorithm = "NLOPT_LD_MMA", xtol_abs = xtol_abs, xtol_rel = xtol_rel, maxeval = maxeval)
     return(opt)
 }
 
-#' @export nloptr_fast_options
+#' @export arma_nloptr_default_options
 #' @aliases nloptr_options
 #' @rdname nloptr_options
 #'
-nloptr_fast_options <- function(trace = FALSE, xtol_rel = 1e-14, maxeval = 1000, xtol_abs = 1e-12)
+arma_nloptr_fast_options <- function(trace = FALSE, xtol_rel = 1e-14, maxeval = 1000, xtol_abs = 1e-12)
 {
     opt <- list(print_level = ifelse(trace, 1, 0), algorithm = "NLOPT_LD_SLSQP", xtol_rel = xtol_rel, maxeval = maxeval, xtol_abs = xtol_abs, check_derivatives = FALSE)
     return(opt)
 }
 
-#' @export nloptr_global_options
+#' @export arma_nloptr_default_options
 #' @aliases nloptr_options
 #' @rdname nloptr_options
 #'
-nloptr_global_options <- function(trace = FALSE, xtol_rel = 1e-14, maxeval = 1000, xtol_abs = 1e-12)
+arma_nloptr_global_options <- function(trace = FALSE, xtol_rel = 1e-14, maxeval = 1000, xtol_abs = 1e-12)
 {
     opt <- list(print_level = ifelse(trace, 1, 0), algorithm = "NLOPT_LD_AUGLAG", xtol_rel = xtol_rel, xtol_abs = xtol_abs, maxeval = maxeval, check_derivatives = FALSE,
                 local_opts = list(algorithm = "NLOPT_LD_MMA", maxeval = 500, xtol_rel = 1e-12))

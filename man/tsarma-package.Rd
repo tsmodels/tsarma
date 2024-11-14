@@ -4,8 +4,8 @@
 \name{tsarma-package}
 \alias{tsarma}
 \alias{tsarma-package}
-\title{tsarma: Univariate ARMA Models}
+\title{tsarma: Univariate Autoregressive Moving Average ('ARMA') Models}
 \description{
-Autoregressive Moving Average Models. Estimation, filtering, prediction, simulation and diagnostics.
+Autoregressive Moving Average Models with methods for estimation using automatic differentiation, filtering, prediction, simulation and diagnostics.
 }
 \keyword{internal}

@@ -22,7 +22,7 @@
 #'
 estimate.tsarma.spec <- function(object, solver = "nloptr", control = NULL, ...)
 {
-    if (is.null(control)) control <- nloptr_fast_options(trace = FALSE)
+    if (is.null(control)) control <- arma_nloptr_fast_options(trace = FALSE)
     estimate_pars <- sum(object$parmatrix$estimate)
     if (estimate_pars == 0) {
         warnings("\nall parameters are fixed...returning filtered object instead.")
