@@ -32,4 +32,5 @@ RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
     knitr, rmarkdown, data.tree, tsdatasets
+Remotes: tsmodels/tsdatasets
 VignetteBuilder: knitr
