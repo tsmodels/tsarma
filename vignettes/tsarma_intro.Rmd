@@ -9,7 +9,7 @@ output:
         toc: true
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{ARMAX Models with tsarma}
+  %\VignetteIndexEntry{ARMAX Models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
