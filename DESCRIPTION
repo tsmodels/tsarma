@@ -5,9 +5,9 @@ Version: 0.2.0
 Author: Alexios Galanos
 Maintainer: alexios galanos <alexios@4dscape.com>
 Depends: R (>= 3.5.0), methods, tsmethods
-LinkingTo: Rcpp (>= 0.10.6), TMB
+LinkingTo: Rcpp (>= 0.10.6), TMB (>= 1.7.20)
 Imports: 
-    TMB (>= 1.9.2),
+    TMB (>= 1.7.20),
     nloptr,
     Rdpack,
     numDeriv,
